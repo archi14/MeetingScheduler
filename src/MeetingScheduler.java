@@ -21,6 +21,7 @@ public class MeetingScheduler {
 
     public boolean scheduleMeeting(List<User> participants, Interval interval)
     {
+
         for(MeetingRoom room: rooms)
         {
             if(bookRoom(room, participants, interval))
@@ -28,6 +29,7 @@ public class MeetingScheduler {
                 return true;
             }
         }
+        System.out.println("No room was booked");
         return false;
     }
 
@@ -49,8 +51,33 @@ public class MeetingScheduler {
         if(!room.getCalendar().hasConflict(interval) && room.getCapacity() >= participants.size())
         {
             Meeting meeting = new Meeting(UUID.randomUUID().toString(), interval, room, participants);
-            room.bookRoom(meeting);
-            return true;
+            List<User> conflictingUsers = new ArrayList<>();
+            for(int i=0;i<participants.size();i++)
+            {
+                if(participants.get(i).isAvailable(interval))
+                {
+                    System.out.println(participants.get(i).getName() + "is Available");
+                    participants.get(i).getCalender().addMeeting(meeting);
+                    System.out.println(participants.get(i).getCalender().getMeetings());
+                }else {
+                    System.out.println(participants.get(i).getName() + " has a conflicting meeting during the interval");
+                   conflictingUsers.add(participants.get(i));
+                }
+            }
+            for(int i=0;i<conflictingUsers.size();i++)
+            {
+                participants.remove(conflictingUsers.get(i));
+            }
+
+            if(participants.isEmpty())
+            {
+                System.out.println("All participants have a conflicting meeting");
+                return false;
+            }else {
+                room.bookRoom(meeting);
+                return true;
+            }
+
         }
         return false;
     }
