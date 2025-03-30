@@ -1,13 +1,9 @@
 public class EmailNotificationObserver implements NotificationObserver{
-
-    String emailId;
-
-    public EmailNotificationObserver(String emailId) {
-        this.emailId =emailId;
-    }
-
-    @Override
-    public void update(String msg) {
-        System.out.println(msg + this.emailId);
+   @Override
+    public void update(Meeting meeting) {
+        for(User user: meeting.getParticipants())
+        {
+            System.out.println("[Email] To:" +  user.getEmail() + " meeting schedules for " + meeting.getInterval().start + " to " + meeting.getInterval().end);
+        }
     }
 }

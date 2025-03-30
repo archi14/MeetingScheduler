@@ -27,7 +27,7 @@ public class Calender {
 
        for(int i=0;i<meetings.size();i++)
        {
-           if(interval.start>=meetings.get(i).getInterval().start || interval.end <= meetings.get(i).getInterval().end)
+           if((interval.end>=meetings.get(i).getInterval().start && interval.end <=meetings.get(i).getInterval().end) || (interval.start >= meetings.get(i).getInterval().start && interval.end <= meetings.get(i).getInterval().end))
            {
                return true;
            }

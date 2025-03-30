@@ -1,19 +1,15 @@
-import java.util.ArrayList;
-import java.util.List;
-
 public class User {
     int id;
     String name;
     Calender calender;
-    List<NotificationObserver> notificationObservers;
+    String email;
 
     public User(int id, String name)
     {
         this.id = id;
         this.name = name;
         calender = new Calender();
-        notificationObservers = new ArrayList<>();
-        notificationObservers.add(new EmailNotificationObserver(name+"@company.com"));
+        this.email = this.name + "@company.com";
     }
 
     public int getId() {
@@ -38,12 +34,12 @@ public class User {
         calender.addMeeting(meeting);
     }
 
+    public String getEmail() {
+        return email;
+    }
+
     public void removeMeeting(Meeting meeting)
     {
         calender.removeMeeting(meeting);
-    }
-
-    public List<NotificationObserver> getNotificationObservers() {
-        return notificationObservers;
     }
 }

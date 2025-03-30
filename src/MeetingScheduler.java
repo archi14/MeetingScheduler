@@ -2,12 +2,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class MeetingScheduler {
+public class MeetingScheduler implements NotificationObservable {
     List<MeetingRoom> rooms;
-
+    List<NotificationObserver> notificationObservers;
     public MeetingScheduler()
     {
         rooms = new ArrayList<>();
+        notificationObservers = new ArrayList<>();
     }
     public void addRoom(MeetingRoom room)
     {
@@ -50,39 +51,52 @@ public class MeetingScheduler {
     {
         if(!room.getCalendar().hasConflict(interval) && room.getCapacity() >= participants.size())
         {
-            List<User> conflictingUsers = new ArrayList<>();
+            List<User> availableUsers = new ArrayList<>();
             for(int i=0;i<participants.size();i++)
             {
                 if(participants.get(i).isAvailable(interval))
                 {
                     System.out.println(participants.get(i).getName() + "is Available");
+                    availableUsers.add(participants.get(i));
                 }else {
                     System.out.println(participants.get(i).getName() + " has a conflicting meeting during the interval");
-                   conflictingUsers.add(participants.get(i));
                 }
             }
-            for(int i=0;i<conflictingUsers.size();i++)
-            {
-                participants.remove(conflictingUsers.get(i));
-            }
 
-            if(participants.isEmpty())
+            if(availableUsers.isEmpty())
             {
                 System.out.println("All participants have a conflicting meeting");
                 return false;
             }else {
-                Meeting meeting = new Meeting(UUID.randomUUID().toString(), interval, room, participants);
+                Meeting meeting = new Meeting(UUID.randomUUID().toString(), interval, room, availableUsers);
                 for(int i=0;i<participants.size();i++)
                 {
-                    participants.get(i).getCalender().addMeeting(meeting);
+                    availableUsers.get(i).getCalender().addMeeting(meeting);
                 }
-                System.out.println(meeting);
-                meeting.notifyObservers();
+                notifyObservers(meeting);
                 room.bookRoom(meeting);
                 return true;
             }
 
         }
         return false;
+    }
+
+    @Override
+    public void subscribe(NotificationObserver notificationObserver) {
+        notificationObservers.add(notificationObserver);
+    }
+
+    @Override
+    public void unsubscribe(NotificationObserver notificationObserver) {
+        notificationObservers.remove(notificationObserver);
+    }
+
+    @Override
+    public void notifyObservers(Meeting meeting) {
+            for(int i=0;i<notificationObservers.size();i++)
+            {
+                notificationObservers.get(i).update(meeting);
+            }
     }
 }

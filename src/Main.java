@@ -8,6 +8,7 @@ import java.util.UUID;
 public class Main {
     public static void main(String[] args) {
         MeetingScheduler scheduler = new MeetingScheduler();
+        scheduler.subscribe(new EmailNotificationObserver());
         MeetingRoom room1 = new MeetingRoom(1, "ggm", "a", 10);
         MeetingRoom room2 = new MeetingRoom(2, "ggm", "b", 20);
 
@@ -29,6 +30,7 @@ public class Main {
             System.out.println("Please enter the end of the time interval");
             int end = scanner.nextInt();
             Interval interval = new Interval(start, end);
+            System.out.println(participants.size());
             if(scheduler.scheduleMeeting(participants, interval))
             {
                 System.out.println("Meeting was scheduled successfully");
